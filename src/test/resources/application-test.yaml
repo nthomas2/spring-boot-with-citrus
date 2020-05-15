@@ -1,10 +1,15 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/appuser
-    username: appuser
-    password: password
+    driver-class-name: com.consol.citrus.db.driver.JdbcDriver
+    url: jdbc:citrus:http://localhost:4567/testdb
+    username:
+    password:
+
   jpa:
     show-sql: true
     generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL9Dialect
     hibernate:
       ddl-auto: create-drop

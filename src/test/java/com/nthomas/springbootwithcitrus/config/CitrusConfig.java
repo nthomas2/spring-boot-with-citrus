@@ -1,39 +1,33 @@
 package com.nthomas.springbootwithcitrus.config;
 
 import com.consol.citrus.config.CitrusSpringConfig;
-import com.consol.citrus.db.driver.JdbcDriver;
+import com.consol.citrus.context.TestContext;
 import com.consol.citrus.dsl.endpoint.CitrusEndpoints;
-import com.consol.citrus.jdbc.server.JdbcServer;
+import com.consol.citrus.dsl.runner.DefaultTestRunner;
+import com.consol.citrus.dsl.runner.TestRunner;
+import com.consol.citrus.http.client.HttpClient;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.context.annotation.Lazy;
 
 @TestConfiguration
-@Import(CitrusSpringConfig.class)
+@Import({TestConfig.class, CitrusSpringConfig.class})
 public class CitrusConfig {
+
     @Bean
-    public JdbcServer jdbcServer() {
-        return CitrusEndpoints.jdbc()
-                .server()
-                .host("localhost")
-                .databaseName("testdb")
-                .port(4567)
-                .timeout(10000L)
-                .autoStart(true)
-                .autoTransactionHandling(false)
-                .build();
+    public TestRunner testRunner(ApplicationContext applicationContext, TestContext testContext) {
+        return new DefaultTestRunner(applicationContext, testContext);
     }
 
     @Bean
-    @DependsOn("jdbcServer")
-    public SimpleDriverDataSource dataSource() {
-        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-        dataSource.setDriverClass(JdbcDriver.class);
-        dataSource.setUrl("jdbc:citrus:http://localhost:4567/testdb");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-        return dataSource;
+    @Lazy // @LocalServerPort isn't instantiated until app actually starts up
+    public HttpClient httpClient(@LocalServerPort int localServerPort) {
+        return CitrusEndpoints.http()
+                .client()
+                .requestUrl("http://localhost:" + localServerPort)
+                .build();
     }
 }

@@ -2,9 +2,10 @@ package com.nthomas.springbootwithcitrus.service;
 
 import com.nthomas.springbootwithcitrus.dao.UserCrudRepository;
 import com.nthomas.springbootwithcitrus.model.UserException;
+import com.nthomas.springbootwithcitrus.model.UserProfileData;
 import com.nthomas.springbootwithcitrus.model.UserProfile;
-import com.nthomas.springbootwithcitrus.model.UserProfileEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,25 +23,25 @@ public class UserService {
         this.userCrudRepository = userCrudRepository;
     }
 
-    public UserProfile createUser(UserProfile userProfile) {
-        if (Objects.isNull(userProfile)) {
+    public UserProfileData createUser(UserProfileData userProfileData) {
+        if (Objects.isNull(userProfileData)) {
             throw new UserException("Did not receive user data");
         }
-        if (Objects.nonNull(userProfile.getId())) {
+        if (Objects.nonNull(userProfileData.getId())) {
             throw new UserException("Cannot create user with existing id");
         }
-        Optional<UserProfileEntity> existingUser = userCrudRepository.findOneByEmail(userProfile.getEmail());
+        Optional<UserProfile> existingUser = userCrudRepository.findOneByEmail(userProfileData.getEmail());
         if (existingUser.isPresent()) {
             throw new UserException("User email already exists");
         }
 
-        return userCrudRepository.save(new UserProfileEntity(userProfile)).toProfile();
+        return userCrudRepository.save(new UserProfile(userProfileData)).toProfile();
     }
 
-    public UserProfile getByEmail(String email) {
-        Optional<UserProfileEntity> user = userCrudRepository.findOneByEmail(email);
+    public UserProfileData getByEmail(String email) {
+        Optional<UserProfile> user = userCrudRepository.findOneByEmail(email);
         if (user.isEmpty()) {
-            throw new UserException("Could not find user");
+            throw new UserException(HttpStatus.NOT_FOUND, "Could not find user");
         }
 
         return user.get().toProfile();

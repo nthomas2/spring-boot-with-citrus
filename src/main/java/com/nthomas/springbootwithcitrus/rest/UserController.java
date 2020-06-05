@@ -1,6 +1,6 @@
 package com.nthomas.springbootwithcitrus.rest;
 
-import com.nthomas.springbootwithcitrus.model.UserProfile;
+import com.nthomas.springbootwithcitrus.model.UserProfileData;
 import com.nthomas.springbootwithcitrus.service.UserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    public UserProfile register(@RequestBody UserProfile userProfile) {
-        return userService.createUser(userProfile);
+    public UserProfileData register(@RequestBody UserProfileData userProfileData) {
+        return userService.createUser(userProfileData);
     }
 
     @GetMapping("/user/{email}")
-    public UserProfile fetch(@PathVariable("email") String email) {
+    public UserProfileData fetch(@PathVariable("email") String email) {
         return userService.getByEmail(email);
     }
 }

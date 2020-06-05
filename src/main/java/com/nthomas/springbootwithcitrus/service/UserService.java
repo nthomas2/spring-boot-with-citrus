@@ -40,7 +40,7 @@ public class UserService {
 
     public UserProfileData getByEmail(String email) {
         Optional<UserProfile> user = userCrudRepository.findOneByEmail(email);
-        if (user.isEmpty()) {
+        if (!user.isPresent()) {
             throw new UserException(HttpStatus.NOT_FOUND, "Could not find user");
         }
 

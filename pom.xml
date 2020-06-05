@@ -15,7 +15,7 @@
 	<description>Spring Boot with Citrus</description>
 
 	<properties>
-		<java.version>13</java.version>
+		<java.version>1.8</java.version>
 		<springfox.version>2.9.2</springfox.version>
 		<citrus.version>2.8.0</citrus.version>
 		<io.cucumber.version>5.7.0</io.cucumber.version>
